@@ -1,0 +1,17 @@
+{
+  "name": "todoapp",
+  "version": "1.0.0",
+  "description": "this is a fully functional todo app.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Bhavnish Patel",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.14.3",
+    "nodemon": "^3.1.10"
+  }
+}
