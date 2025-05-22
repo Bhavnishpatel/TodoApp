@@ -1,8 +1,7 @@
 const User=require("../models/User.js");
-const apiResponse=require("../utils/ApiResponse.js");
 const {ApiError}=require("../utils/ApiError.js");
-const {ApiResponse}=require("../utils/ApiResponse.js");
 const {validatePassword}=require("../utils/validatePassword.js");
+const jwt=require("jsonwebtoken");
 
 const generateAccessAndRefreshTokens = async (userId) => {
      try {
@@ -95,12 +94,43 @@ const login=async(req,res)=>{
            .cookie("accessToken", accessToken, { ...options, maxAge: extractNumber(process.env.ACCESS_TOKEN_EXPIRY) * 24 * 60 * 60 * 1000 })
            .cookie("refreshToken", refreshToken, { ...options, maxAge: extractNumber(process.env.REFRESH_TOKEN_EXPIRY) * 24 * 60 * 60 * 1000 })
            .json({message:"Login Successful",loggedInUser});
-
     } catch (error) {
         console.log(error);
         return res.status(500).json({message:error.message});
     }
     
+}
+
+const checkAuth=async(req,res)=>{
+    console.log(req.cookies.accessToken);
+    
+    const accessToken=req.cookies.accessToken;
+    const refreshToken=req.cookies.refreshToken;
+
+    if(!refreshToken||!accessToken){
+        return res.status(401).json({loggedIn:false,message:"Refresh Token or Access Token is Not Available"});
+    }
+
+    try {
+        const user=jwt.verify(accessToken,process.env.ACCESS_TOKEN_SECRET);
+        return res.status(200).json({loggedIn:true,user});
+    } catch (error) {
+            try {
+            const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+            const {accessToken} = generateAccessAndRefreshTokens(user._id);
+
+            res.cookie('accessToken', accessToken, {
+                ...options,
+                maxAge: extractNumber(process.env.ACCESS_TOKEN_EXPIRY) * 24 * 60 * 60 * 1000
+            });
+
+            return res.status(200).json({ loggedIn: true, user });
+        } catch (refreshErr) {
+            
+            return res.status(401).json({ loggedIn: false });
+        }
+
+    }
 
 }
 
@@ -108,5 +138,6 @@ const login=async(req,res)=>{
 
 module.exports={
     signUp,
-    login
+    login,
+    checkAuth
 }

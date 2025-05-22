@@ -4,12 +4,14 @@ const port=process.env.PORT||8080;
 const connect=require("./db/connect.js");
 const dotenv=require("dotenv");
 const cors=require("cors");
+const cookieParser=require("cookie-parser");
 const userRouter=require("./routes/userRoutes.js");
 
 dotenv.config({
     path:"./.env"
 });
 
+app.use(cookieParser());
 app.use(cors({
     origin:"http://localhost:5173",
     credentials:true

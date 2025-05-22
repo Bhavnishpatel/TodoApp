@@ -3,9 +3,10 @@ import { AiOutlineUser, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
 import InputField from "../components/InputField"; 
 import signupimage from "../assets/signupimage.png";
 import bgimg from "../assets/bgimg.png"
-import { useSignUpMutation } from "../../app/services/Userapi";
+import { useSignUpMutation } from "../app/services/Userapi.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import { useSelector } from "react-redux";
 
 
 const SignupForm = () => {
@@ -18,9 +19,9 @@ const SignupForm = () => {
    const [formError, setFormError] = useState("");
    const [agree,setAgree]=useState(false);
    const navigate=useNavigate();
-  const [signUp,{data,isError,isLoading,isSuccess}]=useSignUpMutation();
-
-    console.log(agree);
+   const [signUp,{data,isError,isLoading,isSuccess}]=useSignUpMutation();
+  const user=useSelector((state)=>state.auth?.user);
+    console.log(user);
     
 
    const handleSubmit=async (e)=>{

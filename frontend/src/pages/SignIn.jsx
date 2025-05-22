@@ -1,18 +1,20 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import InputField from "../components/InputField";
 import SocialLogin from "../components/SocialLogin";
 import { FaUser, FaLock } from "react-icons/fa";
 import signinimg from "../assets/signin.png";
 import bgimg from "../assets/bgimg.png"
-import { useLoginMutation } from '../../app/services/Userapi';
+import { useLoginMutation } from '../app/services/Userapi.js';
 import { toast } from 'react-toastify';
+import {  useNavigate } from 'react-router-dom';
 
 
 const SignIn = () => {
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
-    const [login,{data,isError,isLoading}]=useLoginMutation();
-
+    const [login,{isLoading}]=useLoginMutation();
+    const navigate=useNavigate();
+    
     const handleLogin=async(e)=>{
       e.preventDefault();
       try{
@@ -20,7 +22,8 @@ const SignIn = () => {
           email,
           password
         }).unwrap();
-        toast.success("Login SuccessFul");
+        toast.success("Login Successful");
+        navigate("/dashBoard");
       }catch(err){
          toast.error(err?.data?.message);
       }
@@ -38,7 +41,8 @@ const SignIn = () => {
           <form className="space-y-4" onSubmit={handleLogin}>
             <InputField type="text" placeholder="Enter Email" icon={<FaUser />} value={email} onChange={(e)=>setEmail(e.target.value)} />
             <InputField type="password" placeholder="Enter Password" icon={<FaLock />} value={password} onChange={(e)=>setPassword(e.target.value)} />
-            <button type="submit" className="w-[129px] bg-[#FF9090] text-white py-2 rounded-lg hover:bg-[#FF7373] transition duration-200">
+            <button type="submit"   disabled={isLoading}
+ className="w-[129px] bg-[#FF9090] text-white py-2 rounded-lg hover:bg-[#FF7373] transition duration-200">
              {isLoading?"Loging...":"Login"}
             </button>
           </form>
